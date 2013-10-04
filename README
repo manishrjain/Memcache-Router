@@ -1,0 +1,41 @@
+=======================
+ZMQ (and for Protobuf)
+-----------------------
+You'd want to build both 32-bit and 64-bit versions of the library. 32 bit libraries should go into lib32, and 64 bit into lib (or lib64). This is how you'd compile a 32-bit version, after download zmq package.
+
+$ make clean  # Always remember to make clean.
+$ CC="gcc -m32" CXX="g++ -m32" ./configure --prefix=/tmp/zmq && make && make install
+# You might also have to include -fPIC as a flag for gcc/g++ above to make cmrclient compile.
+
+Finally copy them over.
+$ cd /tmp/zmq/lib && cp -dR . ~/ans/memcache_router/lib32/  # -d option preserves links.
+
+You should double check that the libraries are infact 32 bit. Here's what it shows for protobuf installation.
+$ file -L libprotobuf.so
+libprotobuf.so: ELF 32-bit LSB shared object, Intel 80386, version 1 (SYSV), dynamically linked, not stripped
+
+Without the CC and CXX flags, ./configure would automatically set 64 bit options, because dev boxes in Quora are 64-bit.
+Befor compiling 64 bit versions, remember to 
+$ make clean.
+=======================
+
+
+=======================
+Pybindgen
+-----------------------
+This package depends upon:
+https://code.google.com/p/pybindgen/
+
+Download the tar from the site, unpackage it. It should have waf binary within the package.
+
+You can configure it as such:
+PYTHON=/home/manish/ans/venv/bin/python2.7 ./waf configure --prefix=/tmp/pybindgen
+./waf
+./waf install
+
+This would now add a sitepackage in /tmp:
+/tmp/pybindgen/lib/python2.7/site-packages/pybindgen/
+
+You can copy over pybindgen site-package into this directory, so that compile script can use it.
+=======================
+

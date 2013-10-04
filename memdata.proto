@@ -1,0 +1,66 @@
+package memcache_router;
+
+message KeyValue {
+  optional string key = 1;
+  optional bytes val = 2;
+
+  // Flags to store meta information like value type.
+  optional uint32 flags = 3;
+
+  // Used for set operations. Zero means never expire.
+  optional uint64 expire_in_seconds = 4 [default = 0];
+
+  // Used for Check And Set operation.
+  optional uint64 cas = 5 [default = 0];
+
+  // Used to avoid replacing an existing key.
+  optional bool allow_replace = 6 [default = true];
+
+  // Used for atomic increments and decrements.
+  optional uint64 default_counter_val = 7 [default = 0];
+  optional int32 offset = 8 [default = 0];
+  optional uint64 counter_val = 9;
+
+  // Server to hit. Should match the server list provided.
+  optional int32 server_index = 10;
+
+  // Don't propagate set instructions to Memcached.
+  optional bool no_propagate = 11 [default = false];
+
+  // Return code of the operation, which are enums defined in
+  // libmemcached/memcached_constants.h
+  optional int32 return_code = 14 [default = 0];
+  optional string return_error = 15;
+};
+
+message Server {
+  optional string hostname = 1;
+  optional int32 port = 2;
+};
+
+message Breakdown {
+  optional double average = 1;
+  optional uint64 count = 2;
+};
+
+message Stats {
+  optional Breakdown push_latency = 1;
+  optional Breakdown pop_latency = 2;
+  optional Breakdown batch_size = 3;
+  optional Breakdown loop_latency = 4;
+  optional Breakdown packet_latency = 5;
+  optional Breakdown cache_hit = 6;
+  optional Breakdown cache_miss = 7;
+
+  optional bool touch = 100;
+}
+
+message Instruction {
+  repeated KeyValue get_keys = 1;
+  repeated KeyValue set_keys = 2;
+  repeated KeyValue incr_keys = 3;
+
+  repeated Server servers = 4;
+  optional Stats stats = 5;
+};
+
